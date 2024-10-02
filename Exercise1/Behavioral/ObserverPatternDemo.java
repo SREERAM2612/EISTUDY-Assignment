@@ -4,25 +4,25 @@ package Exercise1.Behavioral;
 import java.util.ArrayList;
 import java.util.List;
 
-interface Observer {
+interface WeatherObserver {
     void update(float temperature, float humidity);
 }
 
-class WeatherStation {
-    private List<Observer> observers = new ArrayList<>();
+class WeatherMonitor {
+    private List<WeatherObserver> observers = new ArrayList<>();
     private float temperature;
     private float humidity;
 
-    public void addObserver(Observer observer) {
+    public void addObserver(WeatherObserver observer) {
         observers.add(observer);
     }
 
-    public void removeObserver(Observer observer) {
+    public void removeObserver(WeatherObserver observer) {
         observers.remove(observer);
     }
 
     public void notifyObservers() {
-        for (Observer observer : observers) {
+        for (WeatherObserver observer : observers) {
             observer.update(temperature, humidity);
         }
     }
@@ -35,32 +35,31 @@ class WeatherStation {
 }
 
 // Observers
-class PhoneDisplay implements Observer {
+class MobileDisplay implements WeatherObserver {
     @Override
     public void update(float temperature, float humidity) {
-        System.out.println("Phone Display - Temperature: " + temperature + ", Humidity: " + humidity);
+        System.out.println("Mobile Display - Temperature: " + temperature + ", Humidity: " + humidity);
     }
 }
 
-class WebDashboard implements Observer {
+class OnlineDashboard implements WeatherObserver {
     @Override
     public void update(float temperature, float humidity) {
-        System.out.println("Web Dashboard - Temperature: " + temperature + ", Humidity: " + humidity);
+        System.out.println("Online Dashboard - Temperature: " + temperature + ", Humidity: " + humidity);
     }
 }
 
 // Main Application
 public class ObserverPatternDemo {
     public static void main(String[] args) {
-        WeatherStation weatherStation = new WeatherStation();
-        PhoneDisplay phoneDisplay = new PhoneDisplay();
-        WebDashboard webDashboard = new WebDashboard();
+        WeatherMonitor weatherMonitor = new WeatherMonitor();
+        MobileDisplay mobileDisplay = new MobileDisplay();
+        OnlineDashboard onlineDashboard = new OnlineDashboard();
 
-        weatherStation.addObserver(phoneDisplay);
-        weatherStation.addObserver(webDashboard);
+        weatherMonitor.addObserver(mobileDisplay);
+        weatherMonitor.addObserver(onlineDashboard);
 
-        weatherStation.setWeatherData(30.0f, 70.0f);
-        weatherStation.setWeatherData(28.0f, 75.0f);
+        weatherMonitor.setWeatherData(30.0f, 70.0f);
+        weatherMonitor.setWeatherData(28.0f, 75.0f);
     }
 }
-

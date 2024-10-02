@@ -58,16 +58,70 @@ public class ScheduleManager {
         return "Error: Task conflicts with an existing task.";
     }
     
+    public String editTask(String taskId, String newDescription, String newStartTime, String newEndTime, String newPriority) {
+        Task taskToEdit = findTaskById(taskId);
 
-    public String removeTask(String description) {
-        for (Task task : tasks) {
-            if (task.toString().contains(description)) {
-                tasks.remove(task);
-                return "Task removed successfully.";
-            }
+        if (taskToEdit == null) {
+            return "Error: Task not found.";
+        }
+    
+        // Validate the new start and end time formats
+        if(newStartTime.compareTo(newEndTime) >= 0) {
+            return "Error: End time must be after start time.";
+        }
+        if(newStartTime.length() != 5 || newEndTime.length() != 5) {
+            return "Error: Invalid time format. Please use HH:MM.";
+        }
+        if(newStartTime.charAt(2) != ':' || newEndTime.charAt(2) != ':') {
+            return "Error: Invalid time format. Please use HH:MM.";
+        }
+        if(!newStartTime.substring(0, 2).matches("[0-9]+") || !newStartTime.substring(3, 5).matches("[0-9]+") ||
+           !newEndTime.substring(0, 2).matches("[0-9]+") || !newEndTime.substring(3, 5).matches("[0-9]+")) {
+            return "Error: Invalid time format. Please use HH:MM.";
+        }
+        if(Integer.parseInt(newStartTime.substring(0, 2)) > 24 || Integer.parseInt(newEndTime.substring(0, 2)) > 24 || 
+           Integer.parseInt(newStartTime.substring(3)) > 60 || Integer.parseInt(newEndTime.substring(3)) > 60) {
+            return "Error: Invalid time format. Please use HH:MM.";
+        }
+    
+        // Create a new task with updated values
+        Task updatedTask = TaskFactory.createTask(newDescription, newStartTime, newEndTime, newPriority);
+    
+        // Remove the old task temporarily
+        tasks.remove(taskToEdit);
+
+        if (!checkConflicts(updatedTask)) {
+            // No conflict, so we add the updated task
+            tasks.add(updatedTask);
+            sortTasksByStartTime();
+            return "Task edited successfully.";
+        }
+        
+        
+        // If there's a conflict, re-add the old task and return an error
+        tasks.add(taskToEdit);
+        sortTasksByStartTime();
+        return "Error: Task conflicts with an existing task.";
+    }
+
+    public String removeTask(String taskId) {
+        Task taskToRemove = findTaskById(taskId);
+        if (taskToRemove != null) {
+            tasks.remove(taskToRemove);
+            return "Task removed successfully.";
         }
         return "Error: Task not found.";
     }
+
+    public String markTaskCompleted(String taskId) {
+        Task taskToComplete = findTaskById(taskId);
+        if (taskToComplete != null) {
+            taskToComplete.markCompleted();
+            return "Task marked as completed.";
+        }
+        return "Error: Task not found.";
+    }
+
 
     public String viewTasks() {
         if (tasks.isEmpty()) {
@@ -75,19 +129,9 @@ public class ScheduleManager {
         }
         StringBuilder result = new StringBuilder();
         for (Task task : tasks) {
-            result.append(task.toString()).append("\n");
+            result.append(task.toString()).append("\n");  // Task.toString() now includes the taskId
         }
         return result.toString();
-    }
-
-    public String markTaskCompleted(String description) {
-        for (Task task : tasks) {
-            if (task.toString().contains(description)) {
-                task.markCompleted();
-                return "Task marked as completed.";
-            }
-        }
-        return "Error: Task not found.";
     }
 
     private boolean checkConflicts(Task newTask) {
@@ -99,6 +143,16 @@ public class ScheduleManager {
         }
         return false;
     }
+    
+    private Task findTaskById(String taskId) {
+        for (Task task : tasks) {
+            if (task.getTaskId().equals(taskId)) {
+                return task;
+            }
+        }
+        return null; // Return null if no task with the ID is found
+    }
+
 
     private boolean isTimeConflict(String start1, String end1, String start2, String end2) {
         return !(end1.compareTo(start2) <= 0 || start1.compareTo(end2) >= 0);

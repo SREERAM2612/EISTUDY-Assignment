@@ -1,11 +1,14 @@
 package question1;
 
+import java.util.UUID;
+
 public class Task {
     private String description;
     private String startTime;
     private String endTime;
     private String priority;
     private boolean isCompleted;
+    private String taskId;
 
     public Task(String description, String startTime, String endTime, String priority) {
         this.description = description;
@@ -13,6 +16,16 @@ public class Task {
         this.endTime = endTime;
         this.priority = priority;
         this.isCompleted = false;
+        this.taskId = UUID.randomUUID().toString();  // Generate unique ID
+
+    }
+    // Getter for taskId
+    public String getTaskId() {
+        return taskId;
+    }
+    
+    public String getDescription() {
+    	return this.description;
     }
 
     public String getStartTime() {
@@ -29,7 +42,6 @@ public class Task {
 
     @Override
     public String toString() {
-        String status = isCompleted ? "Completed" : "Pending";
-        return startTime + " - " + endTime + ": " + description + " [" + priority + "] (" + status + ")";
+        return "Task ID: " + taskId + ", " + description + " [" + priority + "] from " + startTime + " to " + endTime + (isCompleted ? " (Completed)" : "");
     }
 }
