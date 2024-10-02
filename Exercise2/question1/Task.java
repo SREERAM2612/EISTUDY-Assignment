@@ -1,16 +1,17 @@
 package question1;
 
 import java.util.UUID;
+import java.time.LocalTime;
 
 public class Task {
     private String description;
-    private String startTime;
-    private String endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String priority;
     private boolean isCompleted;
     private String taskId;
 
-    public Task(String description, String startTime, String endTime, String priority) {
+    public Task(String description, LocalTime startTime, LocalTime endTime, String priority) {
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -28,11 +29,11 @@ public class Task {
     	return this.description;
     }
 
-    public String getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public String getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
@@ -42,6 +43,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task ID: " + taskId + ", " + description + " [" + priority + "] from " + startTime + " to " + endTime + (isCompleted ? " (Completed)" : "");
+        return taskId + ". " + startTime + " - " + endTime + ": " + description + " [" + priority + "]"+ (isCompleted ? " (Completed)" : "");
     }
+
 }
